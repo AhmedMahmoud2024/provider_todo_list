@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:provider_todo_list/data/providers/todo_provider.dart';
+import 'package:provider_todo_list/data/providers/task_provider.dart';
 import 'package:provider_todo_list/presentation/screens/todo_list_screen.dart';
 
 void main() {
@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-        create: (context)=>TodoProvider(),
+        create: (context)=>TaskProvider(),
       child: MaterialApp(
         title: 'Provider todo list',
         debugShowCheckedModeBanner: false,

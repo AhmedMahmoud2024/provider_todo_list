@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:provider_todo_list/data/providers/todo_provider.dart';
+import 'package:provider_todo_list/data/providers/task_provider.dart';
 import 'package:provider_todo_list/presentation/widgets/todo_item.dart';
 
 class TodoListScreen extends StatelessWidget {
@@ -9,7 +9,7 @@ class TodoListScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
    
-   final todoProvider=context.watch<TodoProvider>();
+   final todoProvider=context.watch<TaskProvider>();
    final todoList= todoProvider.todos;
    final inputController=TextEditingController();
 
@@ -43,7 +43,7 @@ class TodoListScreen extends StatelessWidget {
             ),
             onPressed: (){
               if(inputController.text.isNotEmpty){
-                context.read<TodoProvider>().addTodo(inputController.text);
+                context.read<TaskProvider>().addTask(inputController.text);
                 inputController.clear();
               }
             },
