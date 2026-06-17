@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:provider_todo_list/data/providers/task_provider.dart';
-import 'package:provider_todo_list/presentation/widgets/todo_item.dart';
+import 'package:provider_todo_list/presentation/widgets/task_item.dart';
 
 class TodoListScreen extends StatelessWidget {
   const TodoListScreen({super.key});
@@ -61,7 +61,7 @@ class TodoListScreen extends StatelessWidget {
           itemBuilder:(context,index){
             final todo=todoList[index];
             return TodoItem(
-              todo:todo
+              task:todo
                );
           } 
           )
