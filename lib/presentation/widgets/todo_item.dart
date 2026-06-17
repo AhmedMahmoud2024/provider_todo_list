@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:provider_todo_list/data/models/todo_model.dart';
+import 'package:provider_todo_list/data/models/task_model.dart';
 class TodoItem extends StatelessWidget{
-  final TodoItemModel todo;
+  final TaskModel todo;
 
   const TodoItem({
   super.key,
