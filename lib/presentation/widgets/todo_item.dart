@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider_todo_list/data/models/todo_model.dart';
-class TaskItem extends StatelessWidget{
-  final TodoItemModel task;
+class TodoItem extends StatelessWidget{
+  final TodoItemModel todo;
 
-  const TaskItem({
+  const TodoItem({
   super.key,
-  required this.task,
+  required this.todo,
   });
   
   @override
@@ -14,12 +14,13 @@ class TaskItem extends StatelessWidget{
     duration: const Duration(milliseconds: 200),
         margin: EdgeInsets.symmetric(vertical: 4,horizontal: 16),
         decoration: BoxDecoration(
+          // ignore: deprecated_member_use
           color: Colors.grey.withOpacity(0.2)
         ),
         child: ListTile(
          
                  title: Text(
-                    task.title,
+                    todo.title,
                  ),
                
         ),
