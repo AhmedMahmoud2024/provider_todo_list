@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:provider_todo_list/data/models/task_model.dart';
 class TodoItem extends StatelessWidget{
   final TaskModel task;
+  final VoidCallback onDelete;
   final Function(String) onEdit;
   const TodoItem({
   super.key,
   required this.task,
-  required this.onEdit
+  required this.onEdit,
+  required this.onDelete
   });
   
   @override
@@ -48,7 +50,13 @@ class TodoItem extends StatelessWidget{
                                 Navigator.pop(ctx);
                               },
                                child: const Text('Save')
-                               )
+                               ),
+                              IconButton(
+                                onPressed: onDelete,
+                                 icon: const Icon(Icons.delete_outline,
+                                 color: Colors.redAccent,
+                                 )
+                                 ) 
                         ],
                       ) ,
                     );

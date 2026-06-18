@@ -9,14 +9,15 @@ class TodoListScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
    
-   final todoProvider=context.watch<TaskProvider>();
-   final todoList= todoProvider.todos;
+   final taskProvider=context.watch<TaskProvider>();
+   final todoList= taskProvider.tasks;
    final inputController=TextEditingController();
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Provider ToDo_List'),
+        title: Text('Provider Task Manager'),
         centerTitle: true,
+        elevation: 0,
         backgroundColor: Colors.teal,
         foregroundColor: Colors.white,
       ),
