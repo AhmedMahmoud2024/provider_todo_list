@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:provider/provider.dart';
-import 'package:provider_todo_list/data/providers/task_provider.dart';
 import 'package:provider_todo_list/presentation/bloc/task_cubit.dart';
 import 'package:provider_todo_list/presentation/screens/task_list_screen.dart';
 

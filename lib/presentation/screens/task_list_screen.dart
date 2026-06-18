@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:provider_todo_list/data/providers/task_provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:provider_todo_list/presentation/bloc/task_cubit.dart';
+import 'package:provider_todo_list/presentation/bloc/task_state.dart';
 import 'package:provider_todo_list/presentation/widgets/task_item.dart';
 
 class TaskListScreen extends StatelessWidget {
@@ -8,9 +9,6 @@ class TaskListScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // الاستماع الديناميكي للمخزن لإعادة رسم الـ ListView فقط عند حدوث تغيير
-    final taskProvider = context.watch<TaskProvider>();
-    final taskList = taskProvider.tasks;
     final inputController = TextEditingController();
 
     return Scaffold(
@@ -21,33 +19,40 @@ class TaskListScreen extends StatelessWidget {
         centerTitle: true,
         elevation: 0,
       ),
-      body: taskList.isEmpty
-          ? const Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.assignment_turned_in_outlined, size: 70, color: Colors.grey),
-                  SizedBox(height: 16),
-                  Text(
-                    'Your list is empty. Add some focus!',
-                    style: TextStyle(color: Colors.grey, fontSize: 16),
-                  ),
-                ],
-              ),
-            )
-          : ListView.builder(
+     body: BlocBuilder<TaskCubit, TaskState>(
+        builder: (context, state) {
+          if (state is TaskLoading || state is TaskInitial) {
+            return const Center(child: Text('Write Your Tasks'));
+          }
+
+          if (state is TaskLoaded) {
+            final taskList = state.tasks;
+            if (taskList.isEmpty) {
+              return const Center(child: Text('No tasks yet. Enjoy your day!'));
+            }
+
+            return ListView.builder(
               padding: const EdgeInsets.all(16),
               itemCount: taskList.length,
               itemBuilder: (context, index) {
                 final task = taskList[index];
                 return TaskItem(
                   task: task,
-                  onToggle: () => taskProvider.toggleTaskStatus(task.id),
-                  onDelete: () => taskProvider.deleteTask(task.id),
-                  onEdit: (newTitle) => taskProvider.updateTaskTitle(task.id, newTitle),
+                  onToggle: () => context.read<TaskCubit>().toggleTaskStatus(task.id),
+                  onDelete: () => context.read<TaskCubit>().deleteTask(task.id),
+                  onEdit: (newTitle) => context.read<TaskCubit>().updateTaskTitle(task.id, newTitle),
                 );
               },
-            ),
+            );
+          }
+
+          if (state is TaskError) {
+            return Center(child: Text('Error: ${state.message}'));
+          }
+
+          return const SizedBox.shrink();
+        },
+      ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.deepPurple,
         foregroundColor: Colors.white,
@@ -86,8 +91,7 @@ class TaskListScreen extends StatelessWidget {
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     ),
                     onPressed: () {
-                      // استدعاء صامت (read) لإصدار الأمر دون إعادة رسم زر الـ FAB نفسه
-                      context.read<TaskProvider>().addTask(inputController.text);
+                      context.read<TaskCubit>().addTask(inputController.text);
                       Navigator.pop(ctx);
                     },
                     child: const Text('Save Task', style: TextStyle(fontSize: 16)),
