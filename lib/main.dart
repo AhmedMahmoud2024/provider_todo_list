@@ -16,12 +16,12 @@ class MyApp extends StatelessWidget {
     return ChangeNotifierProvider(
         create: (context)=>TaskProvider(),
       child: MaterialApp(
-        title: 'Provider todo list',
+        title: 'Task Manager',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         ),
-        home: TodoListScreen()
+        home: TaskListScreen()
       ),
     );
   }
