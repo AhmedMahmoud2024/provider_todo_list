@@ -27,6 +27,7 @@ class TaskItem extends StatelessWidget{
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
+              // ignore: deprecated_member_use
               color: Colors.black.withOpacity(0.04),
               blurRadius: 6,
               offset: const Offset(0, 2)

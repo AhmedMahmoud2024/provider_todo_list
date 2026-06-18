@@ -4,7 +4,7 @@ import 'package:provider_todo_list/data/providers/task_provider.dart';
 import 'package:provider_todo_list/presentation/widgets/task_item.dart';
 
 class TaskListScreen extends StatelessWidget {
-  const TaskListScreen({Key? key}) : super(key: key);
+  const TaskListScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
