@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:provider_todo_list/presentation/bloc/task_cubit.dart';
-import 'package:provider_todo_list/presentation/bloc/task_state.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:provider_todo_list/presentation/widgets/task_item.dart';
-
-class TaskListScreen extends StatelessWidget {
+import '../riverpod/task_notifier.dart';
+class TaskListScreen extends ConsumerWidget {
   const TaskListScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context,WidgetRef ref) {
+  
+  final taskList=ref.watch(taskProvider);
     final inputController = TextEditingController();
-
+  
     return Scaffold(
       appBar: AppBar(
         title: const Text('Manage Your Tasks'),
@@ -19,40 +19,29 @@ class TaskListScreen extends StatelessWidget {
         centerTitle: true,
         elevation: 0,
       ),
-     body: BlocBuilder<TaskCubit, TaskState>(
-        builder: (context, state) {
-          if (state is TaskLoading || state is TaskInitial) {
-            return const Center(child: Text('Write Your Tasks'));
-          }
-
-          if (state is TaskLoaded) {
-            final taskList = state.tasks;
-            if (taskList.isEmpty) {
-              return const Center(child: Text('No tasks yet. Enjoy your day!'));
-            }
-
-            return ListView.builder(
+     body: taskList.isEmpty?const Center(
+      child: Text('No Tasks Found.Create one!',
+      style: TextStyle(
+        color: Colors.grey
+      ),
+      ),
+     )
+          :  ListView.builder(
               padding: const EdgeInsets.all(16),
               itemCount: taskList.length,
               itemBuilder: (context, index) {
                 final task = taskList[index];
                 return TaskItem(
                   task: task,
-                  onToggle: () => context.read<TaskCubit>().toggleTaskStatus(task.id),
-                  onDelete: () => context.read<TaskCubit>().deleteTask(task.id),
-                  onEdit: (newTitle) => context.read<TaskCubit>().updateTaskTitle(task.id, newTitle),
+                  onToggle: () => ref.read(taskProvider.notifier).toggleTaskStatus(task.id),
+                  onDelete: () => ref.read(taskProvider.notifier).deleteTask(task.id),
+                  onEdit: (newTitle) => ref.read(taskProvider.notifier).updateTaskTitle(task.id, newTitle),
                 );
               },
-            );
-          }
+            )
+          
 
-          if (state is TaskError) {
-            return Center(child: Text('Error: ${state.message}'));
-          }
-
-          return const SizedBox.shrink();
-        },
-      ),
+          ,
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.deepPurple,
         foregroundColor: Colors.white,
@@ -91,7 +80,7 @@ class TaskListScreen extends StatelessWidget {
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     ),
                     onPressed: () {
-                      context.read<TaskCubit>().addTask(inputController.text);
+                      ref.read(taskProvider.notifier).addTask(inputController.text);
                       Navigator.pop(ctx);
                     },
                     child: const Text('Save Task', style: TextStyle(fontSize: 16)),

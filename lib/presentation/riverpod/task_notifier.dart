@@ -41,3 +41,9 @@ task.id != id
 ).toList();
 }
 }
+
+final taskProvider=NotifierProvider<TaskNotifier,List<TaskModel>>(
+  ()
+   { return TaskNotifier();
+  }
+  );
