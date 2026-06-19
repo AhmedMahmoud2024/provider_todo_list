@@ -1,18 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:provider_todo_list/data/providers/task_provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:provider_todo_list/presentation/widgets/task_item.dart';
-
-class TaskListScreen extends StatelessWidget {
+import '../riverpod/task_notifier.dart';
+class TaskListScreen extends ConsumerWidget {
   const TaskListScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    // الاستماع الديناميكي للمخزن لإعادة رسم الـ ListView فقط عند حدوث تغيير
-    final taskProvider = context.watch<TaskProvider>();
-    final taskList = taskProvider.tasks;
+  Widget build(BuildContext context,WidgetRef ref) {
+  
+  final taskList=ref.watch(taskProvider);
     final inputController = TextEditingController();
-
+  
     return Scaffold(
       appBar: AppBar(
         title: const Text('Manage Your Tasks'),
@@ -21,33 +19,29 @@ class TaskListScreen extends StatelessWidget {
         centerTitle: true,
         elevation: 0,
       ),
-      body: taskList.isEmpty
-          ? const Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.assignment_turned_in_outlined, size: 70, color: Colors.grey),
-                  SizedBox(height: 16),
-                  Text(
-                    'Your list is empty. Add some focus!',
-                    style: TextStyle(color: Colors.grey, fontSize: 16),
-                  ),
-                ],
-              ),
-            )
-          : ListView.builder(
+     body: taskList.isEmpty?const Center(
+      child: Text('No Tasks Found.Create one!',
+      style: TextStyle(
+        color: Colors.grey
+      ),
+      ),
+     )
+          :  ListView.builder(
               padding: const EdgeInsets.all(16),
               itemCount: taskList.length,
               itemBuilder: (context, index) {
                 final task = taskList[index];
                 return TaskItem(
                   task: task,
-                  onToggle: () => taskProvider.toggleTaskStatus(task.id),
-                  onDelete: () => taskProvider.deleteTask(task.id),
-                  onEdit: (newTitle) => taskProvider.updateTaskTitle(task.id, newTitle),
+                  onToggle: () => ref.read(taskProvider.notifier).toggleTaskStatus(task.id),
+                  onDelete: () => ref.read(taskProvider.notifier).deleteTask(task.id),
+                  onEdit: (newTitle) => ref.read(taskProvider.notifier).updateTaskTitle(task.id, newTitle),
                 );
               },
-            ),
+            )
+          
+
+          ,
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.deepPurple,
         foregroundColor: Colors.white,
@@ -86,8 +80,7 @@ class TaskListScreen extends StatelessWidget {
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     ),
                     onPressed: () {
-                      // استدعاء صامت (read) لإصدار الأمر دون إعادة رسم زر الـ FAB نفسه
-                      context.read<TaskProvider>().addTask(inputController.text);
+                      ref.read(taskProvider.notifier).addTask(inputController.text);
                       Navigator.pop(ctx);
                     },
                     child: const Text('Save Task', style: TextStyle(fontSize: 16)),
