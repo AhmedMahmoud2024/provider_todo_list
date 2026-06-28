@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:provider_todo_list/presentation/screens/task_list_screen.dart';
+import 'package:provider_todo_list/presentation/screens/tasks_list_screen.dart';
 
 void main() {
   runApp( //wrap with providerScope
@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: TaskListScreen()
+      home: TasksListScreen()
     );
   }
 }
