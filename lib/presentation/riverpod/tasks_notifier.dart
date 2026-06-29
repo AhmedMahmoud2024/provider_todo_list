@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:geolocator/geolocator.dart'; // 🛰️ إضافة مكتبة الجيولكيتور هنا
@@ -6,14 +7,53 @@ import 'package:provider_todo_list/data/models/updated_task_model.dart';
 
 class TasksNotifier extends StateNotifier<List<UpdatedTaskModel>> {
   static const _storageKey = 'cached_tasks';
-
+  // تعريف متغير الـ Notification Plugin
+  final FlutterLocalNotificationsPlugin _notificationsPlugin = FlutterLocalNotificationsPlugin();
   // 1️⃣ الـ Constructor المعدل
   TasksNotifier() : super([]) {
+     _initNotifications(); // تهيئة الإشعارات عند التشغيل
     // بنحمل التاسكات الأول، وبعد ما تخلص بنشغل الـ Geofencing فوراً
     loadTasksFromStorage().then((_) {
       startGeofencing(); 
     });
   }
+    // تهيئة إعدادات الموبايل (أندرويد وآيفون)
+ Future<void> _initNotifications() async {
+    const AndroidInitializationSettings initializationSettingsAndroid =
+        AndroidInitializationSettings('@mipmap/ic_launcher');
+    
+    const InitializationSettings initializationSettings =
+        InitializationSettings(android: initializationSettingsAndroid);
+        
+    await _notificationsPlugin.initialize(settings: initializationSettings);
+
+    // 🔥 طلب صلاحية الإشعارات للأندرويد 13 فما فوق برمجيًا
+    final androidPlugin = _notificationsPlugin.resolvePlatformSpecificImplementation<
+        AndroidFlutterLocalNotificationsPlugin>();
+    if (androidPlugin != null) {
+      await androidPlugin.requestNotificationsPermission();
+    }
+  }
+  // 🔔 إطلاق الإشعار الحقيقي في الستارة
+  Future<void> _triggerSmartNotification(UpdatedTaskModel task) async {
+    const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
+      'geofencing_channel_id',
+      'Geofencing Alerts',
+      channelDescription: 'تنبيهات الاقتراب من موقع المهمة',
+      importance: Importance.max,
+      priority: Priority.high,
+    );
+
+    const NotificationDetails notificationDetails = NotificationDetails(android: androidDetails);
+
+    await _notificationsPlugin.show(
+     id: task.id.hashCode, // معرف فريد لكل إشعار
+     title: 'تنبيه جغرافي ذكي 🚨',
+     body: 'مهندس، أنت قريب جداً من موقع مهمة: "${task.title}"!',
+    notificationDetails:  notificationDetails,
+    );
+  }
+  
 
   // 2️⃣ خاصية الـ Geofencing ومراقبة الموقع لحظياً
   void startGeofencing() {
@@ -48,12 +88,12 @@ class TasksNotifier extends StateNotifier<List<UpdatedTaskModel>> {
       }
     }
   }
-
+/*
   // 4️⃣ دالة إطلاق التنبيه (تطبع حالياً في الـ Console للـ Web)
   void _triggerSmartNotification(UpdatedTaskModel task) {
     print("🚨 تنبيه ذكي: هندسة، أنت قريب جداً من موقع مهمة: ${task.title}");
   }
-
+*/
   // --- باقي الدالات القديمة زي ما هي بدون أي تغيير ---
 
   Future<void> loadTasksFromStorage() async {
