@@ -65,7 +65,7 @@ class TasksListScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('مهامي الجغرافية'),
+        title: const Text('مهامي '),
         actions: [
           IconButton(
             icon: const Icon(Icons.add, size: 28),
